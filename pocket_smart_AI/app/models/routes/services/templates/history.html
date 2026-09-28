@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}
+History - PocketSmartAI
+{% endblock %}
+
+
+{% block content %}
+
+<section class="history-page">
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <h1>
+                Planning History
+            </h1>
+
+            <p>
+                View your previous PocketSmartAI plans.
+            </p>
+
+        </div>
+
+
+        <a
+            href="/dashboard"
+            class="primary-button">
+
+            Create New Plan
+
+        </a>
+
+    </div>
+
+
+    <!-- LOADING -->
+
+    <div
+        id="historyLoading"
+        class="loading-message">
+
+        <div class="loader"></div>
+
+        <p>
+            Loading your history...
+        </p>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+        id="historyError"
+        class="error-message hidden">
+    </div>
+
+
+    <!-- HISTORY -->
+
+    <section
+        id="historyContainer"
+        class="history-container">
+    </section>
+
+
+    <!-- EMPTY -->
+
+    <div
+        id="emptyHistory"
+        class="empty-state hidden">
+
+        <div class="empty-icon">
+            📋
+        </div>
+
+        <h2>
+            No plans yet
+        </h2>
+
+        <p>
+            Your generated plans will appear here.
+        </p>
+
+        <a
+            href="/dashboard"
+            class="primary-button">
+
+            Create Your First Plan
+
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value ?? "";
+
+    return div.innerHTML;
+}
+
+
+function formatDate(dateValue) {
+
+    if (!dateValue) {
+        return "Unknown date";
+    }
+
+
+    const date =
+        new Date(dateValue);
+
+
+    if (Number.isNaN(date.getTime())) {
+        return "Unknown date";
+    }
+
+
+    return date.toLocaleString();
+}
+
+
+async function loadHistory() {
+
+    const loading =
+        document.getElementById(
+            "historyLoading"
+        );
+
+    const container =
+        document.getElementById(
+            "historyContainer"
+        );
+
+    const emptyState =
+        document.getElementById(
+            "emptyHistory"
+        );
+
+    const errorBox =
+        document.getElementById(
+            "historyError"
+        );
+
+
+    const token =
+        localStorage.getItem(
+            "access_token"
+        );
+
+
+    if (!token) {
+
+        window.location.href =
+            "/login";
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/planners/history/all",
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.detail ||
+                "Unable to load history."
+            );
+
+        }
+
+
+        loading.classList.add(
+            "hidden"
+        );
+
+
+        if (
+            !Array.isArray(data) ||
+            data.length === 0
+        ) {
+
+            emptyState.classList.remove(
+                "hidden"
+            );
+
+            return;
+        }
+
+
+        container.innerHTML =
+            data.map(
+                function(item) {
+
+                    return `
+
+                        <article class="history-card">
+
+                            <div class="history-card-header">
+
+                                <div>
+
+                                    <span class="history-type">
+                                        ${escapeHtml(
+                                            item.planner_type
+                                        )}
+                                    </span>
+
+                                    <h2>
+                                        ${escapeHtml(
+                                            item.request_text
+                                        )}
+                                    </h2>
+
+                                </div>
+
+
+                                <span class="history-date">
+
+                                    ${escapeHtml(
+                                        formatDate(
+                                            item.created_at
+                                        )
+                                    )}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="history-response">
+
+                                <h3>
+                                    AI Response
+                                </h3>
+
+                                <p>
+                                    ${escapeHtml(
+                                        item.response_text
+                                    )}
+                                </p>
+
+                            </div>
+
+                        </article>
+
+                    `;
+
+                }
+            ).join("");
+
+
+    } catch (error) {
+
+        loading.classList.add(
+            "hidden"
+        );
+
+
+        errorBox.textContent =
+            error.message ||
+            "Unable to load history.";
+
+
+        errorBox.classList.remove(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    loadHistory
+);
+
+</script>
+
+{% endblock %}

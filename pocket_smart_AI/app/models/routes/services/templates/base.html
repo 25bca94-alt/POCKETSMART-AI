@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="PocketSmartAI - AI powered smart planning assistant">
+
+    <title>{% block title %}PocketSmartAI{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', path='style.css') }}">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="nav-container">
+
+            <a href="/dashboard" class="brand">
+                PocketSmartAI
+            </a>
+
+            <nav class="nav-links">
+
+                <a href="/dashboard">
+                    Dashboard
+                </a>
+
+                <a href="/history">
+                    History
+                </a>
+
+                <a href="/login"
+                   onclick="logoutUser(event)">
+                    Logout
+                </a>
+
+            </nav>
+
+        </div>
+    </header>
+
+
+    <main class="main-content">
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+
+    <footer class="footer">
+
+        <p>
+            &copy; 2026 PocketSmartAI.
+            Smart planning powered by AI.
+        </p>
+
+    </footer>
+
+
+    <script src="{{ url_for('static', path='script.js') }}"></script>
+
+    {% block scripts %}
+    {% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="PocketSmartAI Home Planner - Create an AI-powered home planning solution."
+    >
+
+    <title>Home Planner - PocketSmartAI</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='style.css') }}"
+    >
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="nav-container">
+        <a href="/dashboard" class="brand">
+            PocketSmartAI
+        </a>
+
+        <nav class="nav-links">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/history">History</a>
+            <a href="/login" onclick="logoutUser(event)">Logout</a>
+        </nav>
+    </div>
+</header>
+
+<main class="main-content">
+
+    <section class="planner-page">
+
+        <div class="planner-header">
+            <h1>🏠 Home Planner</h1>
+
+            <p>
+                Create a personalized home plan based on your space,
+                budget, style, and requirements.
+            </p>
+        </div>
+
+        <div class="planner-card">
+
+            <form id="homePlannerForm">
+
+                <div class="form-group">
+                    <label for="homeTitle">
+                        Plan Title
+                    </label>
+
+                    <input
+                        type="text"
+                        id="homeTitle"
+                        name="title"
+                        placeholder="Example: My Dream Living Room"
+                        maxlength="200"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="homeType">
+                        Home Type
+                    </label>
+
+                    <select
+                        id="homeType"
+                        name="home_type"
+                        required
+                    >
+                        <option value="">Select home type</option>
+                        <option value="1 BHK">1 BHK</option>
+                        <option value="2 BHK">2 BHK</option>
+                        <option value="3 BHK">3 BHK</option>
+                        <option value="4 BHK">4 BHK</option>
+                        <option value="Independent House">
+                            Independent House
+                        </option>
+                        <option value="Apartment">
+                            Apartment
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="homeBudget">
+                        Budget
+                    </label>
+
+                    <input
+                        type="number"
+                        id="homeBudget"
+                        name="budget"
+                        placeholder="Example: 500000"
+                        min="0"
+                        step="1"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="homeStyle">
+                        Preferred Style
+                    </label>
+
+                    <select
+                        id="homeStyle"
+                        name="style"
+                        required
+                    >
+                        <option value="">Select style</option>
+                        <option value="Modern">Modern</option>
+                        <option value="Minimalist">Minimalist</option>
+                        <option value="Traditional">Traditional</option>
+                        <option value="Luxury">Luxury</option>
+                        <option value="Contemporary">Contemporary</option>
+                        <option value="Traditional Indian">
+                            Traditional Indian
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="homeRooms">
+                        Rooms / Areas
+                    </label>
+
+                    <input
+                        type="text"
+                        id="homeRooms"
+                        name="rooms"
+                        placeholder="Example: Living room, bedroom, kitchen"
+                        maxlength="300"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="homeRequirements">
+                        Additional Requirements
+                    </label>
+
+                    <textarea
+                        id="homeRequirements"
+                        name="requirements"
+                        rows="6"
+                        maxlength="2000"
+                        placeholder="Describe your requirements, preferred colors, furniture, storage needs, lighting, etc."
+                        required
+                    ></textarea>
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="homePlannerButton"
+                >
+                    Generate Home Plan
+                </button>
+
+            </form>
+
+            <div
+                id="homePlannerMessage"
+                class="planner-message"
+                aria-live="polite"
+            ></div>
+
+            <div
+                id="homePlannerResult"
+                class="planner-result"
+                hidden
+            >
+
+                <h2>✨ Your AI Home Plan</h2>
+
+                <div
+                    id="homePlannerResponse"
+                    class="ai-response"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer class="footer">
+    <p>
+        &copy; 2026 PocketSmartAI.
+        Smart planning powered by AI.
+    </p>
+</footer>
+
+<script src="{{ url_for('static', path='script.js') }}"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const form = document.getElementById("homePlannerForm");
+        const button = document.getElementById("homePlannerButton");
+        const message = document.getElementById("homePlannerMessage");
+        const result = document.getElementById("homePlannerResult");
+        const responseBox = document.getElementById("homePlannerResponse");
+
+        if (!form) {
+            return;
+        }
+
+        form.addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+
+            const token = localStorage.getItem("access_token");
+
+            if (!token) {
+                message.textContent =
+                    "Please login before creating a home plan.";
+
+                message.className =
+                    "planner-message error";
+
+                window.location.href = "/login";
+                return;
+            }
+
+            const title =
+                document.getElementById("homeTitle").value.trim();
+
+            const homeType =
+                document.getElementById("homeType").value;
+
+            const budget =
+                document.getElementById("homeBudget").value;
+
+            const style =
+                document.getElementById("homeStyle").value;
+
+            const rooms =
+                document.getElementById("homeRooms").value.trim();
+
+            const requirements =
+                document.getElementById("homeRequirements").value.trim();
+
+            const inputData = [
+                "Home Type: " + homeType,
+                "Budget: ₹" + budget,
+                "Preferred Style: " + style,
+                "Rooms / Areas: " + rooms,
+                "Additional Requirements: " + requirements
+            ].join("\n");
+
+            button.disabled = true;
+            button.textContent = "Generating...";
+
+            message.textContent =
+                "Creating your personalized home plan...";
+
+            message.className =
+                "planner-message";
+
+            result.hidden = true;
+
+            try {
+
+                const response = await fetch(
+                    "/api/planners",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer " + token
+                        },
+
+                        body: JSON.stringify({
+                            planner_type: "home",
+                            title: title,
+                            input_data: inputData
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.detail ||
+                        "Unable to generate the home plan."
+                    );
+                }
+
+                responseBox.textContent =
+                    data.ai_response || "No AI response received.";
+
+                result.hidden = false;
+
+                message.textContent =
+                    "Home plan created successfully.";
+
+                message.className =
+                    "planner-message success";
+
+            } catch (error) {
+
+                console.error(
+                    "Home planner error:",
+                    error
+                );
+
+                message.textContent =
+                    error.message ||
+                    "Something went wrong. Please try again.";
+
+                message.className =
+                    "planner-message error";
+
+            } finally {
+
+                button.disabled = false;
+                button.textContent = "Generate Home Plan";
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

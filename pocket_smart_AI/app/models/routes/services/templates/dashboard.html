@@ -1,0 +1,454 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard - PocketSmartAI
+{% endblock %}
+
+
+{% block content %}
+
+<section class="dashboard">
+
+    <div class="dashboard-header">
+
+        <div>
+            <h1>
+                Welcome to PocketSmartAI
+            </h1>
+
+            <p>
+                Create smart plans with the help of AI.
+            </p>
+        </div>
+
+    </div>
+
+
+    <section class="planner-grid">
+
+        <!-- HOME PLANNER -->
+
+        <article class="planner-card">
+
+            <div class="planner-icon">
+                🏠
+            </div>
+
+            <h2>
+                Home Planner
+            </h2>
+
+            <p>
+                Create practical home planning ideas
+                based on your needs and budget.
+            </p>
+
+            <button
+                type="button"
+                class="primary-button"
+                onclick="openPlanner('home')">
+                Create Home Plan
+            </button>
+
+        </article>
+
+
+        <!-- JEWELRY PLANNER -->
+
+        <article class="planner-card">
+
+            <div class="planner-icon">
+                💎
+            </div>
+
+            <h2>
+                Jewelry Planner
+            </h2>
+
+            <p>
+                Get personalized jewelry recommendations
+                for different occasions and budgets.
+            </p>
+
+            <button
+                type="button"
+                class="primary-button"
+                onclick="openPlanner('jewelry')">
+                Create Jewelry Plan
+            </button>
+
+        </article>
+
+
+        <!-- PARTY PLANNER -->
+
+        <article class="planner-card">
+
+            <div class="planner-icon">
+                🎉
+            </div>
+
+            <h2>
+                Party Planner
+            </h2>
+
+            <p>
+                Plan decorations, food, activities,
+                schedules, and party budgets.
+            </p>
+
+            <button
+                type="button"
+                class="primary-button"
+                onclick="openPlanner('party')">
+                Create Party Plan
+            </button>
+
+        </article>
+
+    </section>
+
+
+    <!-- AI PLANNER FORM -->
+
+    <section
+        class="planner-form-section"
+        id="plannerSection">
+
+        <div class="section-heading">
+
+            <h2>
+                AI Planner
+            </h2>
+
+            <p>
+                Tell PocketSmartAI what you need.
+            </p>
+
+        </div>
+
+
+        <form
+            id="plannerForm"
+            class="planner-form">
+
+            <div class="form-group">
+
+                <label for="plannerType">
+                    Planner Type
+                </label>
+
+                <select
+                    id="plannerType"
+                    name="planner_type"
+                    required>
+
+                    <option value="">
+                        Select planner type
+                    </option>
+
+                    <option value="home">
+                        Home Planner
+                    </option>
+
+                    <option value="jewelry">
+                        Jewelry Planner
+                    </option>
+
+                    <option value="party">
+                        Party Planner
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="plannerTitle">
+                    Plan Title
+                </label>
+
+                <input
+                    type="text"
+                    id="plannerTitle"
+                    name="title"
+                    maxlength="200"
+                    placeholder="Example: Birthday Party Plan"
+                    required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="plannerInput">
+                    Your Requirements
+                </label>
+
+                <textarea
+                    id="plannerInput"
+                    name="input_data"
+                    rows="7"
+                    placeholder="Describe what you want PocketSmartAI to plan..."
+                    required></textarea>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="primary-button"
+                id="generateButton">
+
+                Generate AI Plan
+
+            </button>
+
+        </form>
+
+
+        <!-- LOADING -->
+
+        <div
+            id="loadingMessage"
+            class="loading-message hidden">
+
+            <div class="loader"></div>
+
+            <p>
+                Creating your AI plan...
+            </p>
+
+        </div>
+
+
+        <!-- RESULT -->
+
+        <section
+            id="resultSection"
+            class="result-section hidden">
+
+            <h2>
+                Your AI Plan
+            </h2>
+
+            <div
+                id="aiResult"
+                class="ai-result">
+            </div>
+
+        </section>
+
+    </section>
+
+</section>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+
+function openPlanner(type) {
+
+    const plannerType =
+        document.getElementById("plannerType");
+
+    const plannerSection =
+        document.getElementById("plannerSection");
+
+
+    if (plannerType) {
+        plannerType.value = type;
+    }
+
+
+    if (plannerSection) {
+
+        plannerSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+}
+
+
+const plannerForm =
+    document.getElementById("plannerForm");
+
+
+if (plannerForm) {
+
+    plannerForm.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+
+            const generateButton =
+                document.getElementById(
+                    "generateButton"
+                );
+
+            const loadingMessage =
+                document.getElementById(
+                    "loadingMessage"
+                );
+
+            const resultSection =
+                document.getElementById(
+                    "resultSection"
+                );
+
+            const aiResult =
+                document.getElementById(
+                    "aiResult"
+                );
+
+
+            const plannerType =
+                document.getElementById(
+                    "plannerType"
+                ).value;
+
+            const title =
+                document.getElementById(
+                    "plannerTitle"
+                ).value.trim();
+
+            const inputData =
+                document.getElementById(
+                    "plannerInput"
+                ).value.trim();
+
+
+            if (
+                !plannerType ||
+                !title ||
+                !inputData
+            ) {
+
+                alert(
+                    "Please complete all required fields."
+                );
+
+                return;
+            }
+
+
+            const token =
+                localStorage.getItem(
+                    "access_token"
+                );
+
+
+            if (!token) {
+
+                alert(
+                    "Please login before creating a plan."
+                );
+
+                window.location.href =
+                    "/login";
+
+                return;
+            }
+
+
+            generateButton.disabled = true;
+
+            loadingMessage.classList.remove(
+                "hidden"
+            );
+
+            resultSection.classList.add(
+                "hidden"
+            );
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/planners",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+
+                                "Authorization":
+                                    "Bearer " + token
+                            },
+
+                            body: JSON.stringify({
+                                planner_type:
+                                    plannerType,
+
+                                title:
+                                    title,
+
+                                input_data:
+                                    inputData
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.detail ||
+                        "Unable to create the plan."
+                    );
+
+                }
+
+
+                aiResult.textContent =
+                    data.ai_response ||
+                    "No AI response was returned.";
+
+
+                resultSection.classList.remove(
+                    "hidden"
+                );
+
+
+            } catch (error) {
+
+                alert(
+                    error.message ||
+                    "Something went wrong."
+                );
+
+
+            } finally {
+
+                generateButton.disabled = false;
+
+                loadingMessage.classList.add(
+                    "hidden"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+</script>
+
+{% endblock %}

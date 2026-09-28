@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="PocketSmartAI - AI powered smart planning assistant"
+    >
+
+    <meta
+        name="theme-color"
+        content="#6c5ce7"
+    >
+
+    <title>PocketSmartAI - Smart Planning Assistant</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='style.css') }}"
+    >
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="nav-container">
+
+        <a href="/" class="brand">
+            PocketSmartAI
+        </a>
+
+        <nav class="nav-links">
+            <a href="/">Home</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/history">History</a>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        </nav>
+
+    </div>
+</header>
+
+<main class="main-content">
+
+    <section class="hero-section">
+
+        <div class="hero-content">
+
+            <p class="hero-label">
+                ✨ AI POWERED PLANNING
+            </p>
+
+            <h1>
+                Plan Smarter with
+                <span>PocketSmartAI</span>
+            </h1>
+
+            <p class="hero-description">
+                Create personalized plans for your home,
+                jewelry, parties, and everyday needs using
+                the power of AI.
+            </p>
+
+            <div class="hero-actions">
+
+                <a
+                    href="/dashboard"
+                    class="btn btn-primary"
+                >
+                    Get Started
+                </a>
+
+                <a
+                    href="/register"
+                    class="btn btn-secondary"
+                >
+                    Create Account
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="features-section">
+
+        <div class="section-heading">
+
+            <h2>
+                What Can You Plan?
+            </h2>
+
+            <p>
+                Choose a category and let PocketSmartAI
+                help you create a personalized plan.
+            </p>
+
+        </div>
+
+        <div class="feature-grid">
+
+            <article class="feature-card">
+
+                <div class="feature-icon">
+                    🏠
+                </div>
+
+                <h3>
+                    Home Planner
+                </h3>
+
+                <p>
+                    Plan your home based on your budget,
+                    space, style, rooms, and requirements.
+                </p>
+
+                <a
+                    href="/home-planner"
+                    class="feature-link"
+                >
+                    Plan Your Home →
+                </a>
+
+            </article>
+
+            <article class="feature-card">
+
+                <div class="feature-icon">
+                    💎
+                </div>
+
+                <h3>
+                    Jewelry Planner
+                </h3>
+
+                <p>
+                    Find suitable jewelry ideas based on
+                    your occasion, style, preferences, and budget.
+                </p>
+
+                <a
+                    href="/dashboard"
+                    class="feature-link"
+                >
+                    Explore Jewelry →
+                </a>
+
+            </article>
+
+            <article class="feature-card">
+
+                <div class="feature-icon">
+                    🎉
+                </div>
+
+                <h3>
+                    Party Planner
+                </h3>
+
+                <p>
+                    Organize parties with AI-generated
+                    ideas for themes, food, decorations,
+                    activities, and budgets.
+                </p>
+
+                <a
+                    href="/dashboard"
+                    class="feature-link"
+                >
+                    Plan Your Party →
+                </a>
+
+            </article>
+
+        </div>
+
+    </section>
+
+    <section class="how-it-works">
+
+        <div class="section-heading">
+
+            <h2>
+                How PocketSmartAI Works
+            </h2>
+
+            <p>
+                Create your personalized plan in a few simple steps.
+            </p>
+
+        </div>
+
+        <div class="steps-grid">
+
+            <div class="step-card">
+
+                <div class="step-number">
+                    1
+                </div>
+
+                <h3>
+                    Choose a Planner
+                </h3>
+
+                <p>
+                    Select the type of plan you want to create.
+                </p>
+
+            </div>
+
+            <div class="step-card">
+
+                <div class="step-number">
+                    2
+                </div>
+
+                <h3>
+                    Enter Your Requirements
+                </h3>
+
+                <p>
+                    Tell PocketSmartAI about your preferences,
+                    budget, and requirements.
+                </p>
+
+            </div>
+
+            <div class="step-card">
+
+                <div class="step-number">
+                    3
+                </div>
+
+                <h3>
+                    Get Your AI Plan
+                </h3>
+
+                <p>
+                    Receive a personalized plan generated
+                    using AI.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="cta-section">
+
+        <div class="cta-content">
+
+            <h2>
+                Ready to Plan Smarter?
+            </h2>
+
+            <p>
+                Create your PocketSmartAI account and
+                start building personalized plans today.
+            </p>
+
+            <a
+                href="/register"
+                class="btn btn-primary"
+            >
+                Create Your Account
+            </a>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer class="footer">
+
+    <p>
+        &copy; 2026 PocketSmartAI.
+        Smart planning powered by AI.
+    </p>
+
+</footer>
+
+<script src="{{ url_for('static', path='script.js') }}"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const accessToken =
+            localStorage.getItem("access_token");
+
+        const loginLink =
+            document.querySelector('a[href="/login"]');
+
+        const registerLink =
+            document.querySelector('a[href="/register"]');
+
+        if (accessToken) {
+
+            if (loginLink) {
+                loginLink.textContent = "Dashboard";
+                loginLink.href = "/dashboard";
+            }
+
+            if (registerLink) {
+                registerLink.textContent = "My Dashboard";
+                registerLink.href = "/dashboard";
+            }
+        }
+
+    });
+</script>
+
+</body>
+</html>
